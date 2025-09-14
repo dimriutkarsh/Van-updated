@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Van Rakshak - Forest Protection System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            background-image: url('https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zm9yZXN0JTIwYmFja2dyb3VuZHxlbnwwfHwwfHx8MA%3D%3D'); /* Semi-transparent forest background */
+            background-size: cover;
+            background-attachment: fixed;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #forestMap {
+            flex-grow: 1;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            touch-action: auto !important;
+            z-index: 1;
+        }
+        
+        .leaflet-container {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .leaflet-popup-content-wrapper {
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .leaflet-popup-content {
+            padding: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .leaflet-circle-marker {
+            stroke-width: 2px;
+            stroke-opacity: 0.8;
+            fill-opacity: 0.6;
+        }
+
+        .fire-circle {
+            stroke: #ef4444; /* Tailwind red-500 */
+            fill: #ef4444; /* Tailwind red-500 */
+        }
+
+        .needed-circle {
+            stroke: #22c55e; /* Tailwind green-500 */
+            fill: #22c55e; /* Tailwind green-500 */
+            stroke-dasharray: 5, 5;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <header class="w-full bg-[#e6f2f0] bg-opacity-90 backdrop-filter backdrop-blur-lg fixed top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+            <!-- Logo and Title -->
+            <div class="flex items-center space-x-3">
+                <img src="logo.jpg" alt="Van Rakshak Logo" class="w-10 h-10 rounded-full object-cover">
+
+                <div>
+                    <h1 class="text-lg font-bold text-gray-800">Van Rakshak</h1>
+                    <p class="text-xs text-gray-500">Protecting forests through technology</p>
+                </div>
+            </div>
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200">Main-site</a>
+                <a href="user-dashboard.html" class="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200">Dashboard</a>
+                <a href="#" class="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200">Analytics</a>
+            </nav>
+            <!-- Login Button -->
+<div class="hidden md:block">
+    <a href="login.html" 
+       class="px-5 py-2 text-white bg-green-600 rounded-lg shadow-lg hover:bg-green-700 transition-colors duration-200">
+        Login
+    </a>
+</div>
+
+            <!-- Mobile Menu Icon -->
+            <div class="md:hidden">
+                <i class="fas fa-bars text-gray-600 text-lg cursor-pointer"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="van-rakshak-container flex-grow max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 mt-24 flex flex-col w-full h-full">
+        <h2 class="text-center text-3xl font-semibold text-gray-800 mb-8">Thermal Map</h2>
+        <p class="text-center text-gray-600 mb-6">Real-time temperature monitoring of forest regions</p>
+        
+        <!-- Map and Sidebar Container -->
+        <div class="flex-grow flex flex-col md:flex-row gap-6 mb-6">
+            <!-- Map Section -->
+            <div id="forestMap" class="w-full md:w-2/3 h-[500px] md:h-auto z-10"></div>
+
+            <!-- Sidebar -->
+            <aside class="w-full md:w-1/3 bg-white p-6 rounded-2xl shadow-lg flex-shrink-0 z-10">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Dashboard Controls</h3>
+                
+                <!-- Filter Controls -->
+                <div class="mb-6">
+                    <h4 class="text-md font-medium text-gray-700 mb-2 flex items-center"><i class="fas fa-filter text-blue-500 mr-2"></i>Map Filters</h4>
+                    <div class="flex space-x-2">
+                        <button id="showAllBtn" class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200 text-sm">All</button>
+                        <button id="showFireBtn" class="flex-1 px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors duration-200 text-sm">Fire Zones</button>
+                        <button id="showPlantationBtn" class="flex-1 px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors duration-200 text-sm">Plantation</button>
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="mb-6">
+                    <h4 class="text-md font-medium text-gray-700 mb-2 flex items-center"><i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>Map Legend</h4>
+                    <div class="flex flex-col space-y-2 text-sm text-gray-600">
+                        <div class="flex items-center">
+                            <span class="w-4 h-4 rounded-full bg-red-500 mr-2"></span>
+                            <span>Fire Risk Zones</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-4 h-4 rounded-full border-2 border-green-500 border-dashed mr-2"></span>
+                            <span>Plantation Needed Zones</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plantation Targets -->
+                <div class="mb-6">
+                    <h4 class="text-md font-medium text-gray-700 mb-2 flex items-center"><i class="fas fa-tree text-green-500 mr-2"></i>Plantation Target</h4>
+                    <div class="bg-green-50 p-4 rounded-xl">
+                        <p class="text-sm text-gray-700">Total Trees to Plant:</p>
+                        <p class="text-xl font-bold text-green-600">100,000</p>
+                        <p class="text-sm text-gray-500 mt-1">Status: On track</p>
+                    </div>
+                </div>
+
+                <!-- Recent Alerts -->
+                <div>
+                    <h4 class="text-md font-medium text-gray-700 mb-2 flex items-center"><i class="fas fa-bell text-yellow-500 mr-2"></i>Recent Alerts</h4>
+                    <div class="space-y-4">
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-200">
+                            <p class="text-sm font-semibold text-red-700">High Temp Alert</p>
+                            <p class="text-xs text-red-500 mt-1">Ghansali Zone - 30.40°N, 78.49°E</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-200">
+                            <p class="text-sm font-semibold text-red-700">Increased Wind Speed</p>
+                            <p class="text-xs text-red-500 mt-1">Chamba Area - 30.35°N, 78.39°E</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        
+        // Store layer groups for filtering
+        let fireLayers = L.layerGroup();
+        let plantationLayers = L.layerGroup();
+
+        // Initialize Map
+        const map = L.map('forestMap', {
+            center: [30.0668, 79.0193], // Central Uttarakhand
+            zoom: 9,
+            minZoom: 8,
+            maxBounds: L.latLngBounds([28.7, 77.2], [31.5, 81.0]), // Broader Uttarakhand bounds
+            zoomControl: false,
+            dragging: true,
+            tap: false,
+            inertia: true
+        });
+
+        // Add Base Map
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        }).addTo(map);
+
+        // Data for zones (20 fire zones)
+        const fireZones = [
+            { latlng: [30.4011, 78.4977], data: { name: "Ghansali Fire Zone", riskLevel: "High", maxTemp: "46°C", lastFire: "April 2023", area: "8.5 km²" } },
+            { latlng: [30.3568, 78.3932], data: { name: "Chamba High Risk Area", riskLevel: "Medium", maxTemp: "45°C", lastFire: "May 2022", area: "6.2 km²" } },
+            { latlng: [29.9547, 78.1631], data: { name: "Haridwar Fire Prone Zone", riskLevel: "High", maxTemp: "48°C", lastFire: "May 2024", area: "10.1 km²" } },
+            { latlng: [29.3919, 79.4542], data: { name: "Nainital Lake Perimeter", riskLevel: "Medium", maxTemp: "42°C", lastFire: "April 2024", area: "5.5 km²" } },
+            { latlng: [30.12, 79.11], data: { name: "Rudraprayag Zone", riskLevel: "High", maxTemp: "47°C", lastFire: "July 2024", area: "7.8 km²" } },
+            { latlng: [30.73, 79.60], data: { name: "Badrinath Forest", riskLevel: "Low", maxTemp: "35°C", lastFire: "N/A", area: "2.1 km²" } },
+            { latlng: [30.90, 78.45], data: { name: "Uttarkashi Fire Zone", riskLevel: "High", maxTemp: "49°C", lastFire: "June 2024", area: "12.3 km²" } },
+            { latlng: [29.75, 78.90], data: { name: "Pauri Garhwal Hotspot", riskLevel: "Medium", maxTemp: "44°C", lastFire: "May 2023", area: "9.5 km²" } },
+            { latlng: [29.25, 79.80], data: { name: "Almora Fire Area", riskLevel: "High", maxTemp: "45°C", lastFire: "May 2024", area: "11.0 km²" } },
+            { latlng: [29.50, 80.05], data: { name: "Champawat Risk Zone", riskLevel: "Medium", maxTemp: "41°C", lastFire: "April 2023", area: "4.7 km²" } },
+            { latlng: [30.05, 78.25], data: { name: "Rishikesh-Dehradun Zone", riskLevel: "High", maxTemp: "46°C", lastFire: "May 2024", area: "8.9 km²" } },
+            { latlng: [30.65, 78.70], data: { name: "Gangotri Forest Hotspot", riskLevel: "Low", maxTemp: "38°C", lastFire: "N/A", area: "3.2 km²" } },
+            { latlng: [30.25, 79.55], data: { name: "Karnaprayag Fire Area", riskLevel: "Medium", maxTemp: "43°C", lastFire: "June 2023", area: "6.8 km²" } },
+            { latlng: [29.65, 79.95], data: { name: "Binsar Wildlife Sanctuary", riskLevel: "Low", maxTemp: "37°C", lastFire: "N/A", area: "1.5 km²" } },
+            { latlng: [30.15, 77.95], data: { name: "Mussoorie Forest Fire", riskLevel: "Medium", maxTemp: "40°C", lastFire: "April 2024", area: "5.1 km²" } },
+            { latlng: [29.5833, 80.2250], data: { name: "Pithoragarh Fire Zone", riskLevel: "High", maxTemp: "47°C", lastFire: "June 2024", area: "9.2 km²" } },
+            { latlng: [29.70, 78.40], data: { name: "Kotdwar High Risk Area", riskLevel: "High", maxTemp: "46°C", lastFire: "May 2024", area: "7.6 km²" } },
+            { latlng: [30.45, 79.90], data: { name: "Joshimath Fire Zone", riskLevel: "Low", maxTemp: "39°C", lastFire: "N/A", area: "2.5 km²" } },
+            { latlng: [30.80, 78.20], data: { name: "Yamunotri Trail Hotspot", riskLevel: "Medium", maxTemp: "41°C", lastFire: "April 2023", area: "4.8 km²" } },
+            { latlng: [30.50, 79.40], data: { name: "Gopeshwar Fire Area", riskLevel: "High", maxTemp: "45°C", lastFire: "May 2024", area: "8.3 km²" } }
+        ];
+
+        // Data for zones (30 plantation needed zones)
+        const plantationNeededZones = [
+            { latlng: [30.4805, 78.5562], data: { name: "Pratapnagar Degraded Area", priority: "High", areaToPlant: "15 km²", recommendedSpecies: ["Deodar Cedar", "Banj Oak", "Rhododendron"], deadline: "Dec 2024" } },
+            { latlng: [30.3129, 78.3984], data: { name: "Narendra Nagar Erosion Zone", priority: "Medium", areaToPlant: "12 km²", recommendedSpecies: ["Himalayan Maple", "Bamboo", "Sal Tree"], deadline: "June 2025" } },
+            { latlng: [29.5833, 80.2250], data: { name: "Pithoragarh Landslide Area", priority: "High", areaToPlant: "20 km²", recommendedSpecies: ["Pine", "Oak", "Deodar"], deadline: "Aug 2024" } },
+            { latlng: [30.6385, 77.8008], data: { name: "Mussoorie Hills Degraded Zone", priority: "Medium", areaToPlant: "8 km²", recommendedSpecies: ["Chir Pine", "Silver Oak", "Rhododendron"], deadline: "March 2025" } },
+            { latlng: [30.15, 79.35], data: { name: "Srinagar Plantation Site", priority: "High", areaToPlant: "10 km²", recommendedSpecies: ["Pine", "Deodar", "Banj Oak"], deadline: "Jan 2025" } },
+            { latlng: [30.70, 78.00], data: { name: "Dhanaulti Reforestation", priority: "Low", areaToPlant: "5 km²", recommendedSpecies: ["Oak", "Rhododendron"], deadline: "June 2026" } },
+            { latlng: [29.65, 79.15], data: { name: "Ranikhet Degraded Lands", priority: "Medium", areaToPlant: "14 km²", recommendedSpecies: ["Cypress", "Pine", "Sal"], deadline: "April 2025" } },
+            { latlng: [30.35, 77.95], data: { name: "Dehradun Outskirts", priority: "High", areaToPlant: "18 km²", recommendedSpecies: ["Teak", "Sal", "Eucalyptus"], deadline: "Nov 2024" } },
+            { latlng: [29.90, 78.85], data: { name: "Lansdowne Hills", priority: "Medium", areaToPlant: "9 km²", recommendedSpecies: ["Oak", "Deodar"], deadline: "Feb 2025" } },
+            { latlng: [29.20, 79.95], data: { name: "Haldwani Foothills", priority: "High", areaToPlant: "22 km²", recommendedSpecies: ["Sal", "Sandalwood"], deadline: "July 2024" } },
+            { latlng: [30.20, 78.50], data: { name: "Tehri Lakeside", priority: "Low", areaToPlant: "6 km²", recommendedSpecies: ["Bamboo", "Banj Oak"], deadline: "Sep 2025" } },
+            { latlng: [30.55, 79.20], data: { name: "Chamoli Degraded Area", priority: "High", areaToPlant: "17 km²", recommendedSpecies: ["Pine", "Rhododendron", "Deodar"], deadline: "Aug 2024" } },
+            { latlng: [30.85, 78.90], data: { name: "Gangotri Valley", priority: "Low", areaToPlant: "4 km²", recommendedSpecies: ["Fir", "Pine"], deadline: "May 2026" } },
+            { latlng: [29.80, 78.25], data: { name: "Rajaji National Park Buffer", priority: "Medium", areaToPlant: "11 km²", recommendedSpecies: ["Sal", "Teak"], deadline: "April 2025" } },
+            { latlng: [29.45, 79.65], data: { name: "Bhimtal Watershed", priority: "High", areaToPlant: "16 km²", recommendedSpecies: ["Oak", "Cypress"], deadline: "Oct 2024" } },
+            { latlng: [30.00, 79.80], data: { name: "Kausani Hill Station", priority: "Medium", areaToPlant: "7 km²", recommendedSpecies: ["Deodar", "Pine"], deadline: "March 2025" } },
+            { latlng: [30.30, 77.85], data: { name: "Paonta Sahib Foothills", priority: "Low", areaToPlant: "3 km²", recommendedSpecies: ["Sal", "Teak"], deadline: "July 2025" } },
+            { latlng: [29.10, 80.00], data: { name: "Tanakpur Border Region", priority: "High", areaToPlant: "19 km²", recommendedSpecies: ["Sal", "Bamboo"], deadline: "Sep 2024" } },
+            { latlng: [30.50, 78.80], data: { name: "Pauri Erosion Zone", priority: "High", areaToPlant: "13 km²", recommendedSpecies: ["Banj Oak", "Rhododendron"], deadline: "Nov 2024" } },
+            { latlng: [29.85, 79.50], data: { name: "Garur Valley Plantation", priority: "Medium", areaToPlant: "10 km²", recommendedSpecies: ["Deodar Cedar", "Pine"], deadline: "Jan 2025" } },
+            { latlng: [30.10, 77.90], data: { name: "Doon Valley Reforestation", priority: "High", areaToPlant: "25 km²", recommendedSpecies: ["Sal", "Teak", "Acacia"], deadline: "Dec 2024" } },
+            { latlng: [30.75, 79.50], data: { name: "Hemkund Sahab Trails", priority: "Low", areaToPlant: "5 km²", recommendedSpecies: ["Pine", "Fir"], deadline: "July 2025" } },
+            { latlng: [30.95, 78.60], data: { name: "Kedarnath Watershed", priority: "High", areaToPlant: "15 km²", recommendedSpecies: ["Deodar Cedar", "Oak"], deadline: "Aug 2024" } },
+            { latlng: [29.60, 79.40], data: { name: "Mukteshwar Forest", priority: "Medium", areaToPlant: "9 km²", recommendedSpecies: ["Oak", "Rhododendron"], deadline: "Feb 2025" } },
+            { latlng: [29.25, 78.90], data: { name: "Ramnagar Buffer Zone", priority: "High", areaToPlant: "18 km²", recommendedSpecies: ["Sal", "Teak"], deadline: "Sep 2024" } },
+            { latlng: [30.18, 79.15], data: { name: "Devprayag Gorge", priority: "Low", areaToPlant: "6 km²", recommendedSpecies: ["Banj Oak", "Himalayan Maple"], deadline: "May 2025" } },
+            { latlng: [29.98, 79.05], data: { name: "Gairsain Degraded Area", priority: "High", areaToPlant: "14 km²", recommendedSpecies: ["Pine", "Deodar"], deadline: "July 2024" } },
+            { latlng: [30.78, 78.35], data: { name: "Gangotri National Park", priority: "Medium", areaToPlant: "10 km²", recommendedSpecies: ["Fir", "Spruce"], deadline: "March 2025" } },
+            { latlng: [29.88, 79.75], data: { name: "Binsar Sanctuary Buffer", priority: "Low", areaToPlant: "8 km²", recommendedSpecies: ["Oak", "Rhododendron"], deadline: "Oct 2025" } },
+            { latlng: [30.55, 77.85], data: { name: "Mussoorie Wildlife Sanctuary", priority: "High", areaToPlant: "12 km²", recommendedSpecies: ["Chir Pine", "Oak"], deadline: "Aug 2024" } }
+        ];
+
+        // Create Map Features and add them to layers
+        function initMapFeatures() {
+            fireZones.forEach(zone => {
+                const layer = L.circle(zone.latlng, {
+                    color: '#ef4444',
+                    fillColor: '#ef4444',
+                    radius: 1500,
+                    className: 'fire-circle'
+                }).bindPopup(`
+                    <div class="p-2">
+                        <h3 class="text-md font-semibold text-red-600"><i class="fas fa-fire mr-1"></i>${zone.data.name}</h3>
+                        <p class="text-sm"><span class="font-medium">Risk:</span> ${zone.data.riskLevel}</p>
+                        <p class="text-sm"><span class="font-medium">Peak Temp:</span> ${zone.data.maxTemp}</p>
+                        <p class="text-sm"><span class="font-medium">Last Incident:</span> ${zone.data.lastFire}</p>
+                        <p class="text-sm"><span class="font-medium">Area:</span> ${zone.data.area}</p>
+                    </div>
+                `);
+                fireLayers.addLayer(layer);
+            });
+
+            plantationNeededZones.forEach(zone => {
+                const speciesList = zone.data.recommendedSpecies.map(sp => `<li class="flex items-center"><i class="fas fa-seedling text-green-500 mr-2"></i>${sp}</li>`).join('');
+                const layer = L.circle(zone.latlng, {
+                    color: '#22c55e',
+                    fillColor: '#22c55e',
+                    radius: 2000,
+                    className: 'needed-circle'
+                }).bindPopup(`
+                    <div class="p-2">
+                        <h3 class="text-md font-semibold text-green-600"><i class="fas fa-exclamation-triangle mr-1"></i>${zone.data.name}</h3>
+                        <p class="text-sm"><span class="font-medium">Priority:</span> ${zone.data.priority}</p>
+                        <p class="text-sm"><span class="font-medium">Area to Plant:</span> ${zone.data.areaToPlant}</p>
+                        <p class="text-sm"><span class="font-medium">Deadline:</span> ${zone.data.deadline}</p>
+                        <div class="mt-2">
+                            <strong class="text-sm text-gray-700">Recommended Species:</strong>
+                            <ul class="list-none p-0 mt-1 text-sm space-y-1">
+                                ${speciesList}
+                            </ul>
+                        </div>
+                    </div>
+                `);
+                plantationLayers.addLayer(layer);
+            });
+        }
+
+        // Filter functions
+        function showAllZones() {
+            fireLayers.addTo(map);
+            plantationLayers.addTo(map);
+        }
+
+        function showFireZones() {
+            map.removeLayer(plantationLayers);
+            fireLayers.addTo(map);
+        }
+
+        function showPlantationZones() {
+            map.removeLayer(fireLayers);
+            plantationLayers.addTo(map);
+        }
+
+        // Initialize everything
+        initMapFeatures();
+        showAllZones();
+
+        // Add Zoom Control
+        L.control.zoom({
+            position: 'topright'
+        }).addTo(map);
+
+        // Enable proper touch handling
+        map.touchZoom.enable();
+        map.doubleClickZoom.enable();
+        map.scrollWheelZoom.enable();
+
+        // Set strict boundaries
+        map.setMaxBounds(map.getBounds());
+
+        // Event listeners for filter buttons
+        document.getElementById('showAllBtn').addEventListener('click', showAllZones);
+        document.getElementById('showFireBtn').addEventListener('click', showFireZones);
+        document.getElementById('showPlantationBtn').addEventListener('click', showPlantationZones);
+    </script>
+</body>
+</html>

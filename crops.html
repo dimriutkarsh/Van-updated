@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSmart Analyst Pro</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            background-image: url('https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zm9yZXN0JTIwYmFja2dyb3VuZHxlbnwwfHwwfHx8MA%3D%3D');
+            background-size: cover;
+            background-attachment: fixed;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid #2e7d32;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Navbar -->
+    <header class="w-full bg-[#e6f2f0] bg-opacity-90 backdrop-filter backdrop-blur-lg fixed top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+            <!-- Logo and Title -->
+            <div class="flex items-center space-x-3">
+                <img src="logo.jpg" alt="AgriSmart Logo" class="w-10 h-10 rounded-full object-cover">
+                <div>
+                    <h1 class="text-lg font-bold text-gray-800">AgriSmart Analyst Pro</h1>
+                    <p class="text-xs text-gray-500">AI-Powered Agricultural Intelligence System</p>
+                </div>
+            </div>
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200">Main-Site</a>
+                <a href="outputMap.html" class="text-gray-600 hover:text-green-600 font-medium transition-colors duration-200">Hotspots</a>
+            </nav>
+            <!-- Login Button -->
+<div class="hidden md:block">
+    <a href="login.html" 
+       class="px-5 py-2 text-white bg-green-600 rounded-lg shadow-lg hover:bg-green-700 transition-colors duration-200">
+        Login
+    </a>
+</div>
+            <!-- Mobile Menu Icon -->
+            <div class="md:hidden">
+                <i class="fas fa-bars text-gray-600 text-lg cursor-pointer"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="van-rakshak-container flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg p-6 sm:p-8 lg:p-10 rounded-3xl shadow-xl">
+            <h2 class="text-center text-3xl font-semibold text-gray-800 mb-8">Agricultural Analysis</h2>
+            
+            <div class="flex flex-col md:flex-row gap-4 mb-8">
+                <input type="text" id="location" placeholder="Enter location or coordinates 📍" class="flex-grow p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200">
+                <button onclick="getLocation()" class="p-4 bg-green-600 text-white rounded-xl shadow-md hover:bg-green-700 transition-colors duration-200 flex items-center justify-center gap-2">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span class="hidden md:inline">Auto Detect</span>
+                </button>
+                <button onclick="analyzeLocation()" class="p-4 bg-green-600 text-white rounded-xl shadow-md hover:bg-green-700 transition-colors duration-200 flex items-center justify-center gap-2">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="hidden md:inline">Generate Report</span>
+                </button>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loading" class="text-center py-12" style="display: none;">
+                <div class="spinner"></div>
+                <p class="mt-4 text-gray-600">Analyzing environmental conditions...</p>
+            </div>
+
+            <!-- Dashboard -->
+            <div id="dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="display: none;">
+                <!-- Analysis data cards will be injected here -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API_KEY = "AIzaSyC-OZUgBSrn2XqIpSg_L35mOkC8llefIMM"; // The Canvas environment will inject the API key automatically
+        
+        async function analyzeLocation() {
+            const location = document.getElementById('location').value.trim();
+            if (!location) {
+                const dashboard = document.getElementById('dashboard');
+                dashboard.innerHTML = `<p class="text-center text-red-500 font-medium">Please enter a location or use auto-detect.</p>`;
+                dashboard.style.display = 'grid';
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                // The AI will use its internal knowledge to generate the report based on the location name
+                const systemPrompt = "You are an AI-powered agricultural analyst. Generate a detailed analysis for the specified location. Your report should be structured and easy to read. Include a summary, recommended crops with brief explanations, optimal farming practices, and potential risks. The response must be a valid JSON object.";
+                
+                const userQuery = `Generate an agricultural analysis report for the location: ${location}.`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                "summary": { "type": "STRING" },
+                                "recommendedCrops": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                "optimalPractices": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                "potentialRisks": { "type": "ARRAY", "items": { "type": "STRING" } }
+                            },
+                            "propertyOrdering": ["summary", "recommendedCrops", "optimalPractices", "potentialRisks"]
+                        }
+                    },
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                };
+
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const analysisReport = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (!analysisReport) {
+                    throw new Error("Could not generate analysis report. The API response was empty. This may be a temporary issue. Please try again.");
+                }
+
+                // Parse the JSON string from the API response
+                const parsedData = JSON.parse(analysisReport);
+
+                // Display the analysis in separate cards
+                document.getElementById('dashboard').innerHTML = `
+                    <!-- Summary Card -->
+                    <div class="data-card bg-white p-6 rounded-2xl shadow-lg col-span-1 md:col-span-2 lg:col-span-3">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-chart-line text-green-600"></i> Summary for ${location}
+                        </h3>
+                        <p class="text-gray-700 text-sm md:text-base">${parsedData.summary}</p>
+                    </div>
+
+                    <!-- Recommended Crops Card -->
+                    <div class="data-card bg-white p-6 rounded-2xl shadow-lg">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-seedling text-green-600"></i> Recommended Crops
+                        </h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700 text-sm md:text-base">
+                            ${parsedData.recommendedCrops.map(crop => `<li>${crop}</li>`).join('')}
+                        </ul>
+                    </div>
+                    
+                    <!-- Optimal Practices Card -->
+                    <div class="data-card bg-white p-6 rounded-2xl shadow-lg">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-tractor text-green-600"></i> Optimal Farming Practices
+                        </h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700 text-sm md:text-base">
+                            ${parsedData.optimalPractices.map(practice => `<li>${practice}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <!-- Potential Risks Card -->
+                    <div class="data-card bg-white p-6 rounded-2xl shadow-lg">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-exclamation-triangle text-orange-600"></i> Potential Risks
+                        </h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700 text-sm md:text-base">
+                            ${parsedData.potentialRisks.map(risk => `<li>${risk}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+                document.getElementById('dashboard').style.display = 'grid';
+
+            } catch (error) {
+                console.error('Analysis failed:', error);
+                const message = `Analysis failed: ${error.message}.`;
+                const dashboard = document.getElementById('dashboard');
+                dashboard.innerHTML = `<p class="text-center text-red-500 font-medium">${message}</p>`;
+                dashboard.style.display = 'grid';
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function getLocation() {
+            try {
+                if (!navigator.geolocation) {
+                    const message = 'Geolocation is not supported by your browser.';
+                    const dashboard = document.getElementById('dashboard');
+                    dashboard.innerHTML = `<p class="text-center text-red-500 font-medium">${message}</p>`;
+                    dashboard.style.display = 'grid';
+                    throw new Error(message);
+                }
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject);
+                });
+                const lat = position.coords.latitude.toFixed(4);
+                const lon = position.coords.longitude.toFixed(4);
+                document.getElementById('location').value = `${lat}, ${lon}`;
+            } catch (error) {
+                const message = `Location Error: ${error.message}.`;
+                const dashboard = document.getElementById('dashboard');
+                dashboard.innerHTML = `<p class="text-center text-red-500 font-medium">${message}</p>`;
+                dashboard.style.display = 'grid';
+            }
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('dashboard').style.display = show ? 'none' : 'grid';
+        }
+    </script>
+</body>
+</html>

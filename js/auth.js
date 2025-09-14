@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     role: 'admin',
                     name: 'Forest Admin'
                 });
-                window.location.href = 'admin-dashboard.html';
+                window.location.href = 'https://van-dash.vercel.app/';
             } else {
                 showFormError('admin-email', 'Invalid admin credentials');
             }
