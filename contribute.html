@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VanRakshak - Plant Trees, Save Forests</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Colors */
+            --primary-color: #2E7D32;
+            --primary-light: #4CAF50;
+            --primary-dark: #1B5E20;
+            --primary-bg: #E8F5E9;
+            
+            --secondary-color: #795548;
+            --secondary-light: #A1887F;
+            --secondary-dark: #4E342E;
+            
+            --accent-color: #FF9800;
+            --accent-light: #FFB74D;
+            --accent-dark: #F57C00;
+            
+            --neutral-50: #FAFAFA;
+            --neutral-100: #F5F5F5;
+            --neutral-200: #EEEEEE;
+            --neutral-300: #E0E0E0;
+            --neutral-400: #BDBDBD;
+            --neutral-500: #9E9E9E;
+            --neutral-600: #757575;
+            --neutral-700: #616161;
+            --neutral-800: #424242;
+            --neutral-900: #212121;
+            
+            --alert-high: #F44336;
+            --alert-medium: #FF9800;
+            --alert-low: #4CAF50;
+            
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --error: #F44336;
+            --info: #2196F3;
+            
+            /* Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-xxl: 48px;
+            
+            /* Typography */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+            --font-family-display: 'Playfair Display', Georgia, serif;
+            
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-md: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            --font-size-4xl: 2.25rem;
+            
+            /* Borders */
+            --border-radius-sm: 4px;
+            --border-radius-md: 8px;
+            --border-radius-lg: 12px;
+            --border-radius-xl: 16px;
+            --border-radius-full: 9999px;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            /* Transitions */
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+            
+            /* Layout */
+            --header-height: 70px;
+            --sidebar-width: 250px;
+            --container-max-width: 1440px;
+            
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size-md);
+            line-height: 1.5;
+            color: var(--neutral-900);
+            background-color: #e6f2f0;
+            min-height: 100vh;
+        }
+        
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://jobs.gartner.com/media/5jpeah4r/gettyimages-637583458.jpg?anchor=center&mode=crop&width=1200&height=630&mode=crop&quality=75');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            line-height: 1.2;
+            margin-bottom: var(--space-md);
+            font-weight: 600;
+            color: var(--neutral-900);
+        }
+        
+        h1 {
+            font-size: var(--font-size-3xl);
+        }
+        
+        h2 {
+            font-size: var(--font-size-2xl);
+        }
+        
+        h3 {
+            font-size: var(--font-size-xl);
+        }
+        
+        h4 {
+            font-size: var(--font-size-lg);
+        }
+        
+        p {
+            margin-bottom: var(--space-md);
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+        
+        a:hover {
+            color: var(--primary-dark);
+        }
+        
+        button {
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-family: inherit;
+            font-size: inherit;
+        }
+        
+        ul, ol {
+            list-style: none;
+        }
+        
+        input, select, textarea {
+            font-family: inherit;
+            font-size: inherit;
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--neutral-300);
+            border-radius: var(--border-radius-md);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            padding: 0 var(--space-lg);
+        }
+        
+        .section {
+            padding: var(--space-xl) 0;
+        }
+        
+        .btn, .cta-button {
+            display: inline-block;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--border-radius-md);
+            background-color: var(--primary-color);
+            color: #e6f2f0;
+            font-weight: 500;
+            text-align: center;
+            transition: background-color var(--transition-fast), transform var(--transition-fast);
+        }
+        
+        .btn:hover, .cta-button:hover {
+            background-color: var(--primary-dark);
+            color: #e6f2f0;
+            transform: translateY(-2px);
+        }
+        
+        .secondary {
+            background-color: var(--secondary-color);
+        }
+        
+        .secondary:hover {
+            background-color: var(--secondary-dark);
+        }
+        
+        .primary {
+            background-color: var(--primary-color);
+        }
+        
+        .primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
+        /* Header Styles */
+        #main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(230, 242, 240, 0.8);
+            box-shadow: var(--shadow-md);
+            z-index: 1000;
+            transition: background-color var(--transition-normal), box-shadow var(--transition-normal);
+            height: var(--header-height);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        
+        #main-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+        }
+        
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .logo-img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            border-radius: var(--border-radius-full);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo h1 {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            margin: 0;
+            color: var(--primary-dark);
+        }
+        
+        .tagline {
+            font-size: var(--font-size-sm);
+            color: var(--neutral-600);
+            margin: 0;
+        }
+        
+        nav {
+            display: flex;
+            align-items: center;
+        }
+        
+        #nav-menu {
+            display: flex;
+            gap: var(--space-lg);
+        }
+        
+        #nav-menu a {
+            color: var(--neutral-700);
+            font-weight: 500;
+            transition: color var(--transition-fast);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--border-radius-sm);
+        }
+        
+        #nav-menu a:hover {
+            color: var(--primary-color);
+        }
+        
+        #nav-menu a.active {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .login-btn {
+            background-color: var(--primary-color);
+            color: white !important;
+            padding: var(--space-sm) var(--space-md) !important;
+            border-radius: var(--border-radius-md);
+            transition: background-color var(--transition-fast);
+        }
+        
+        .login-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .mobile-menu-button {
+            display: none;
+            color: var(--neutral-800);
+        }
+        
+        /* Mobile Menu */
+        @media (max-width: 768px) {
+            .mobile-menu-button {
+                display: block;
+            }
+        
+            #nav-menu {
+                position: fixed;
+                top: var(--header-height);
+                left: 0;
+                right: 0;
+                background-color: rgba(230, 242, 240, 0.8);
+                flex-direction: column;
+                padding: var(--space-md);
+                box-shadow: var(--shadow-md);
+                transform: translateY(-100%);
+                opacity: 0;
+                transition: transform var(--transition-normal), opacity var(--transition-normal);
+                z-index: 999;
+                gap: var(--space-md);
+            }
+        
+            #nav-menu.open {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        
+            #nav-menu a {
+                display: block;
+                padding: var(--space-sm);
+                border-radius: var(--border-radius-sm);
+            }
+        }
+        
+        
+        /* Main Content Styles */
+        main {
+            padding-top: var(--header-height);
+        }
+        
+        .contribute-section {
+            padding: var(--space-xxl) 0;
+        }
+        
+        .section-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto var(--space-xxl);
+            background-color: rgba(230, 242, 240, 0.8);
+            padding: var(--space-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(5px);
+        }
+        
+        .section-header h2 {
+            color: var(--primary-dark);
+            margin-bottom: var(--space-md);
+        }
+        
+        .section-header p {
+            color: var(--neutral-700);
+            margin: 0;
+        }
+        
+        /* Contribution Stats */
+        .contribution-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xxl);
+        }
+        
+        .contribution-card {
+            background-color: rgba(230, 242, 240, 0.8);
+            padding: var(--space-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            backdrop-filter: blur(5px);
+        }
+        
+        .contribution-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .contribution-value {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .contribution-label {
+            font-size: var(--font-size-md);
+            color: var(--neutral-700);
+        }
+        
+        /* Contribution Options */
+        .contribution-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-xl);
+            margin-bottom: var(--space-xxl);
+        }
+        
+        .contribution-option {
+            background-color: rgba(230, 242, 240, 0.8);
+            padding: var(--space-xxl);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            backdrop-filter: blur(5px);
+        }
+        
+        .contribution-option:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .option-icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: var(--space-md);
+            color: var(--primary-dark);
+        }
+        
+        .option-title {
+            font-family: var(--font-family-display);
+            font-size: var(--font-size-xl);
+            color: var(--primary-dark);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .option-description {
+            color: var(--neutral-700);
+            margin-bottom: var(--space-lg);
+        }
+        
+        /* Form Styles */
+        .tree-request-form {
+            background-color: rgba(230, 242, 240, 0.8);
+            padding: var(--space-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            max-width: 600px;
+            margin: 0 auto;
+            backdrop-filter: blur(5px);
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: var(--space-md);
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: var(--neutral-900);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: var(--space-md);
+            border: 1px solid rgba(224, 224, 224, 0.5);
+            border-radius: var(--border-radius-md);
+            background-color: rgba(255, 255, 255, 0.7);
+            transition: border-color 0.2s ease-in-out;
+        }
+        
+        .cta-button {
+            width: 100%;
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--border-radius-md);
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .cta-button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        /* Footer Styles */
+        footer {
+            background-color: rgba(230, 242, 240, 0.8);
+            padding: var(--space-xl) 0;
+            border-top: 1px solid rgba(224, 224, 224, 0.5);
+            backdrop-filter: blur(5px);
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--space-xxl);
+            margin-bottom: var(--space-lg);
+            flex-wrap: wrap;
+        }
+        
+        .footer-logo {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .footer-logo .logo {
+            margin-bottom: var(--space-md);
+        }
+        
+        .footer-logo p {
+            color: var(--neutral-700);
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: var(--space-xxl);
+            flex-wrap: wrap;
+        }
+        
+        .link-group h4 {
+            color: var(--primary-dark);
+            margin-bottom: var(--space-md);
+        }
+        
+        .link-group ul {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+        
+        .link-group a {
+            color: var(--neutral-700);
+            transition: color var(--transition-fast);
+        }
+        
+        .link-group a:hover {
+            color: var(--primary-dark);
+        }
+        
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(224, 224, 224, 0.5);
+            padding-top: var(--space-md);
+            flex-wrap: wrap;
+            gap: var(--space-md);
+        }
+        
+        .footer-bottom p {
+            color: var(--neutral-600);
+            margin: 0;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: var(--space-md);
+        }
+        
+        .social-link {
+            color: var(--neutral-700);
+            font-weight: 500;
+            transition: color var(--transition-fast);
+        }
+        
+        .social-link:hover {
+            color: var(--primary-color);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .contribution-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        
+            .contribution-options {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .contribution-stats {
+                grid-template-columns: 1fr;
+            }
+        
+            .footer-content {
+                flex-direction: column;
+                gap: var(--space-lg);
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: var(--space-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="main-header" class="scrolled">
+        <div class="container">
+            <div class="logo-container">
+                <div class="logo">
+                    <img src="logo.jpg" alt="VanRakshak Logo" class="logo-img">
+                    <h1>VanRakshak</h1>
+                </div>
+                <p class="tagline">Plant Trees, Save Forests</p>
+            </div>
+            <nav>
+                <button id="menu-toggle" class="mobile-menu-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+                </button>
+                <ul id="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="contribute.html" class="active">Contribute</a></li>
+                    <li><a href="login.html" class="login-btn">Login</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="contribute-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Plant Trees, Restore Forests</h2>
+                    <p>Join our mission to restore forest areas affected by fires</p>
+                </div>
+
+                <div class="contribution-stats">
+                    <div class="contribution-card">
+                        <div class="contribution-value" id="stat-treesLost">2,500</div>
+                        <div class="contribution-label">Trees Lost This Year</div>
+                    </div>
+                    <div class="contribution-card">
+                        <div class="contribution-value" id="stat-treesPlanted">1,800</div>
+                        <div class="contribution-label">Trees Planted</div>
+                    </div>
+                    <div class="contribution-card">
+                        <div class="contribution-value" id="stat-pendingRequests">45</div>
+                        <div class="contribution-label">Pending Requests</div>
+                    </div>
+                    <div class="contribution-card">
+                        <div class="contribution-value" id="stat-completedRequests">89</div>
+                        <div class="contribution-label">Completed Plantations</div>
+                    </div>
+                </div>
+
+                <div class="contribution-options">
+                    <div class="contribution-option">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="option-icon"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                        <h3 class="option-title">Plant with VanRakshak</h3>
+                        <p class="option-description">We'll handle the planting process with our expert team and local partners</p>
+                        <a href="#tree-request-form" class="cta-button primary">Request Plantation</a>
+                    </div>
+
+                    <div class="contribution-option">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="option-icon"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>
+                        <h3 class="option-title">Plant by Yourself</h3>
+                        <p class="option-description">Get guidance on where and how to plant trees in affected areas</p>
+                        <a href="plantation.html" class="cta-button secondary">View Planting Areas</a>
+                    </div>
+                </div>
+
+                <form id="tree-request-form" class="tree-request-form">
+                    <div class="section-header">
+                        <h2>Request Tree Plantation</h2>
+                        <p>Fill out this form to request tree plantation in affected areas</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="planting-location">Planting Location</label>
+                        <select id="planting-location" name="location" required>
+                            <option value="">Select a location</option>
+                            <option value="himalayan">Himalayan Pine Forest</option>
+                            <option value="western">Western Ghats Forest</option>
+                            <option value="central">Central Indian Forest</option>
+                            <option value="eastern">Eastern Ghats Forest</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="number-of-trees">Number of Trees</label>
+                        <input type="number" id="number-of-trees" name="trees" required min="1" max="1000" value="10">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tree-type">Tree Type</label>
+                        <select id="tree-type" name="type" required>
+                            <option value="">Select tree type</option>
+                            <option value="native">Native Species Mix</option>
+                            <option value="fruit">Fruit Trees</option>
+                            <option value="medicinal">Medicinal Plants</option>
+                            <option value="bamboo">Bamboo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="planting-date">Preferred Planting Date</label>
+                        <input type="date" id="planting-date" name="date" required>
+                    </div>
+
+                    <button type="submit" class="cta-button primary">Submit Request</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M12 18a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path><path d="m17 15-1.5-1.5"></path></svg>
+                        <h3>VanRakshak</h3>
+                    </div>
+                    <p>Committed to restoring our forests and protecting biodiversity through strategic tree planting initiatives.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#">Home</a></li>
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Contribute</a></li>
+                            <li><a href="#">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="link-group">
+                        <h4>Resources</h4>
+                        <ul>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Impact Reports</a></li>
+                            <li><a href="#">FAQs</a></li>
+                            <li><a href="#">Planting Guides</a></li>
+                        </ul>
+                    </div>
+                    <div class="link-group">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Cookie Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 VanRakshak. All Rights Reserved.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">Facebook</a>
+                    <a href="#" class="social-link">Twitter</a>
+                    <a href="#" class="social-link">Instagram</a>
+                    <a href="#" class="social-link">LinkedIn</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

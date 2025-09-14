@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VanRakshak - Forest Fire Detection Platform</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/map.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<style>
+nav {
+  padding: 10px 20px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+nav a.active {
+  border-bottom: 2px solid #2e7d32;
+}
+
+.login-btn {
+  background: #2e7d32;
+  color: white !important;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+.login-btn:hover {
+  background: #1b5e20;
+}
+
+/* Dropdown */
+.dropdown {
+  position: relative;
+}
+.dropbtn {
+  color: black;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s;
+}
+.dropbtn:hover {
+  background: #388e3c;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background: white;
+  min-width: 160px;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.15);
+  border-radius: 6px;
+  z-index: 1000;
+}
+.dropdown-content li {
+  list-style: none;
+}
+.dropdown-content a {
+  display: block;
+  padding: 10px;
+  color: #2e7d32;
+}
+.dropdown-content a:hover {
+  background: #c8e6c9;
+}
+/* Show when active */
+.dropdown-content.show {
+  display: block;
+}
+.mobile-menu-button {
+  display: none;
+}
+
+</style>
+
+<body>
+    <header id="main-header">
+        <div class="container">
+            <div class="logo-container">
+                 <div class="logo">
+                    <img src="logo.jpg" alt="VanRakshak Logo" class="logo-icon" />
+                    <h1>VanRakshak</h1>
+                </div>
+ 
+                <p class="tagline">Protecting forests through technology</p>
+            </div>
+<nav>
+  <button id="menu-toggle" class="mobile-menu-button">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+      viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="4" x2="20" y1="12" y2="12"></line>
+      <line x1="4" x2="20" y1="6" y2="6"></line>
+      <line x1="4" x2="20" y1="18" y2="18"></line>
+    </svg>
+  </button>
+
+  <ul id="nav-menu">
+    <li><a href="#" class="active">Dashboard</a></li>
+    <li><a href="#alerts-section">Alerts</a></li>
+    <li><a href="#analytics-section">Analytics</a></li>
+    <li><a href="#about-section">About</a></li>
+
+    <!-- DROPDOWN -->
+    <li class="dropdown">
+      <button class="dropbtn" id="dropdownToggle">More ▾</button>
+      <ul class="dropdown-content" id="dropdownMenu">
+        <li><a href="contribute.html">Contribute</a></li>
+        <li><a href="crops.html">AgriSmart</a></li>
+        <li><a href="outputMap.html">Hotspot</a></li>
+      </ul>
+    </li>
+
+    <li><a href="login.html" class="login-btn">Login</a></li>
+  </ul>
+</nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-content">
+                    <h2>Real-time Forest Fire Detection</h2>
+                    <p>Using advanced thermal satellite technology to monitor and protect our forests</p>
+                    <div class="hero-cta">
+                        <button class="cta-button primary">View Map</button>
+                        <button class="cta-button secondary">Learn More</button>
+                    </div>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <h3>24/7</h3>
+                        <p>Monitoring</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>98%</h3>
+                        <p>Accuracy</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>15 min</h3>
+                        <p>Alert Time</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="map-section" id="map-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Thermal Map</h2>
+                    <p>Real-time temperature monitoring of forest regions</p>
+                
+        <h1>Geo satellite Map</h1>
+        <iframe
+            title="Windy Weather Map"
+            src="https://embed.windy.com/embed2.html?lat=28.61&lon=77.23&detailLat=28.61&detailLon=77.23&width=650&height=450&zoom=5&level=surface&overlay=wind&menu=&message=true"
+            width="100%"
+            height="500"
+            frameBorder="0"
+            className="rounded shadow"
+            allowFullScreen
+          ></iframe>
+
+        <section class="alerts-section" id="alerts-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Fire Alerts</h2>
+                    <p>Recent temperature anomalies and potential fire hazards</p>
+                </div>
+                <div class="alerts-container">
+                    <div class="alert-filters">
+                        <div class="filter-group">
+                            <label>Filter by:</label>
+                            <select id="alert-filter">
+                                <option value="all">All Alerts</option>
+                                <option value="high">High Priority</option>
+                                <option value="medium">Medium Priority</option>
+                                <option value="low">Low Priority</option>
+                            </select>
+                        </div>
+                        <div class="search-group">
+                            <input type="text" id="alert-search" placeholder="Search by location...">
+                            <button class="search-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="alerts-list">
+                        <!-- Alert items will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="analytics-section" id="analytics-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Analytics Dashboard</h2>
+                    <p>Visual insights into forest temperature trends</p>
+                </div>
+                <div class="analytics-grid">
+                    <div class="analytics-card wide">
+                        <h3>Temperature Trends</h3>
+                        <div class="chart-container">
+                            <canvas id="tempTrendChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Alert Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="alertDistChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Regional Hotspots</h3>
+                        <div class="chart-container">
+                            <canvas id="hotspotChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="analytics-card wide">
+                        <h3>Key Statistics</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">42°C</div>
+                                <div class="stat-label">Highest Temp</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">26°C</div>
+                                <div class="stat-label">Average Temp</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">Active Alerts</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">3</div>
+                                <div class="stat-label">Critical Zones</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section" id="about-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>About VanRakshak</h2>
+                    <p>Our mission and technology</p>
+                </div>
+                <div class="about-content">
+                    <div class="about-text">
+                        <h3>Our Mission</h3>
+                        <p>VanRakshak ("Forest Protector") is dedicated to using cutting-edge technology to detect and prevent forest fires before they cause devastating damage to our precious ecosystems.</p>
+                        
+                        <h3>How It Works</h3>
+                        <p>Our platform uses thermal satellite imagery to monitor forest temperatures in real-time. When abnormal temperature increases are detected, our system automatically generates alerts for fire agencies and local authorities, allowing for rapid response and intervention.</p>
+                        
+                        <h3>Key Features</h3>
+                        <ul>
+                            <li>Real-time thermal mapping of forest regions</li>
+                            <li>Automated alert system for temperature anomalies</li>
+                            <li>Historical data analysis for identifying high-risk zones</li>
+                            <li>Mobile notifications for field personnel</li>
+                            <li>Comprehensive analytics dashboard</li>
+                        </ul>
+                    </div>
+                    <div class="about-image">
+                        <img src="https://images.pexels.com/photos/1287075/pexels-photo-1287075.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Forest landscape">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-content">
+                    <h2>Join Us in Protecting Our Forests</h2>
+                    <p>Sign up for alerts and become part of our forest protection network</p>
+                    <form id="subscribe-form" class="subscribe-form">
+                        <input type="email" placeholder="Your email address" required>
+                        <button type="submit" class="cta-button primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                 <div class="footer-logo">
+                    <img src="logo.jpg" alt="VanRakshak Logo" class="logo-icon" />
+                    <h1>VanRakshak</h1>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="#">Dashboard</a></li>
+                            <li><a href="#alerts-section">Alerts</a></li>
+                            <li><a href="#analytics-section">Analytics</a></li>
+                            <li><a href="#about-section">About</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Resources</h4>
+                        <ul>
+                            <li><a href="#">Documentation</a></li>
+                            <li><a href="#">API Access</a></li>
+                            <li><a href="#">Data Sources</a></li>
+                            <li><a href="#">Research Papers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Contact</h4>
+                        <ul>
+                            <li><a href="mailto:info@vanrakshak.org">info@vanrakshak.org</a></li>
+                            <li><a href="tel:+919876543210">+91 9876543210</a></li>
+                            <li><a href="#">Report an Issue</a></li>
+                            <li><a href="#">Emergency Line</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 VanRakshak. All rights reserved.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+                    <a href="#" class="social-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg></a>
+                    <a href="#" class="social-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg></a>
+                    <a href="#" class="social-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect width="4" height="12" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/analytics.js"></script>
+</body>
+
+<script>
+document.getElementById("menu-toggle").addEventListener("click", () => {
+  document.getElementById("nav-menu").classList.toggle("active");
+});
+
+const dropdownToggle = document.getElementById("dropdownToggle");
+const dropdownMenu = document.getElementById("dropdownMenu");
+
+// Toggle on button click
+dropdownToggle.addEventListener("click", (e) => {
+  e.stopPropagation(); // Prevent closing immediately
+  dropdownMenu.classList.toggle("show");
+});
+
+// Close when clicking outside
+document.addEventListener("click", (e) => {
+  if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+    dropdownMenu.classList.remove("show");
+  }
+});
+</script>
+</html>
