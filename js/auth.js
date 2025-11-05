@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     role: 'admin',
                     name: 'Forest Admin'
                 });
-                window.location.href = 'https://van-dash.vercel.app/';
+                window.location.href = 'https://van-rakshak.netlify.app/';
             } else {
                 showFormError('admin-email', 'Invalid admin credentials');
             }
